@@ -7,7 +7,10 @@ Write-Host ''
 if (-not $db -or -not (Test-Path $db)) {
   Write-Host '  JL WAS NOT FOUND ON THIS COMPUTER.' -ForegroundColor Red
   Write-Host '  Please run this on a computer that uses the JL program.' -ForegroundColor Red
-  Write-Host '  Questions? Call ECAP at 347-598-8798' -ForegroundColor Red
+  Write-Host '  Questions? Call ECAP' -ForegroundColor Red
+  Read-Host '   Press and key to exit'
+  exit
+  exit
 } else {
   Write-Host "  JL database found:" -ForegroundColor Gray
   Write-Host "     $db" -ForegroundColor Gray
