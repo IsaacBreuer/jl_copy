@@ -70,5 +70,8 @@ if (-not $db -or -not (Test-Path $db)) {
     Write-Host '  ERROR: The zip file could not be created.' -ForegroundColor Red
     Write-Host '  Please call ECAP at 347-598-8798' -ForegroundColor Red
   }
-  #Read-Host '  Press Enter to finish'
+  Read-Host '  Press Enter to finish'
+  exit
+  exit
+  
 }
