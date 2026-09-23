@@ -20,8 +20,32 @@ if (-not $db -or -not (Test-Path $db)) {
   Copy-Item -LiteralPath $db -Destination $tmp
   $name = (Get-Date -Format 'yyyy-MM-dd') + ' JL For ECAP.zip'
   $zip  = Join-Path $desk $name
+
+
+
+  
   Write-Host '  Creating zip file...' -ForegroundColor Gray
-  Compress-Archive -Path "$tmp\*" -DestinationPath $zip -Force
+  Write-Host '  This can take several minutes. Please do not close this window.' -ForegroundColor Yellow
+  $ProgressPreference = 'SilentlyContinue'
+  $srcMB = ''
+  try { $srcMB = '{0:N0}' -f ((Get-Item $tmp\*).Length / 1MB) } catch { }
+  if ($srcMB) { Write-Host "  (compressing about $srcMB MB)" -ForegroundColor Gray }
+  $job = $null
+  try { $job = Start-Job -ScriptBlock { param($s,$d) Compress-Archive -Path $s -DestinationPath $d -Force } -ArgumentList "$tmp\*", $zip } catch { }
+  if ($job) {
+    while ($job.State -eq 'Running') {
+      $done = 0
+      try { if (Test-Path $zip) { $done = '{0:N0}' -f ((Get-Item $zip).Length / 1MB) } } catch { }
+      Write-Host " Working... $done MB written   "  -ForegroundColor Gray
+      Start-Sleep -Seconds 2
+    }
+    Receive-Job $job -ErrorAction SilentlyContinue | Out-Null
+    Remove-Job $job -Force -ErrorAction SilentlyContinue
+    Write-Host ''
+  } else {
+    Compress-Archive -Path "$tmp\*" -DestinationPath $zip -Force
+  }
+  
   Remove-Item $tmp -Recurse -Force
   if (Test-Path $zip) {
 
